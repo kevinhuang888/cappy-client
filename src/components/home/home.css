@@ -1,0 +1,9 @@
+
+.home{
+    background-image: url(../../assets/home/Background.jpg);
+    background-color: black;
+
+    height:100%;
+    width:100%;
+    /*border: solid 2px rgb(91, 184, 173);*/
+}
