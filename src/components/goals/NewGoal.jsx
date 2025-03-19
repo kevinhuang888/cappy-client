@@ -35,12 +35,16 @@ function NewGoal({setNewGoal,addGoal,currCategory, setCurrCategory}) {
         console.log(`Goal: ${goalInput}, Star:${starInput}`)
     }
 
+    const handleGoalRepeat = () => {
+        setRepeatInput(!repeatInput)
+    }
+
   return (
     <div className="newGoal">  
         <div className="top">
             <input className="goalInput" onChange={(e) => handleGoalInputChange(e)} placeholder="New Goal"></input>
             <div className="imgContainer">
-                <img src={repeat} className="repeat" alt="Repeat" />
+                <img src={repeat} className={"repeat " + (repeatInput && "active")} alt="Repeat" onClick={handleGoalRepeat} />
             </div>
         </div> 
         <div className="category">

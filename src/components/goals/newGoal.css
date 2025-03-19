@@ -48,6 +48,10 @@
                 max-height: 100%;
                 opacity: 0.5;
                 cursor: pointer;
+
+                &.active{
+                    opacity:1;
+                }
             }
             .repeat:hover{
                 opacity: 1;

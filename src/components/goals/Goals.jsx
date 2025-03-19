@@ -9,64 +9,13 @@ import NewGoal from './NewGoal'
 
 export default function Goals({stars,setStars}) {
 
-  const sampleGoalList1 = [
-    {
-      id:1,
-      content:"Dribble a Basketball 5 times",
-      completed:false,
-      repeat:false,
-      stars:3,
-      edit:false,
-      tempInput:""
-    },
-    {
-      id:2,
-      content:"Play 10 hours of Fortnite",
-      completed:false,
-      repeat:false,
-      stars:19,
-      edit:false,
-      tempInput:""
-    }
-  ]
-
-  const goalTemplate = 
-    {
-      id:1,
-      content:"Sample Goal",
-      completed:false,
-      repeat:false,
-      stars:3,
-      edit:true,
-      tempInput:""
-    }
-
-    const catTemplate = 
-    {
-      name:"Untitled Category",
-      active:false,
-      goalList:[]
-    }
-  
-
-    //Delete Later
-  const sampleCategories = [
-    {
-        name:"Category 1",
-        active:false,
-        goalList:sampleGoalList1
-    },
-    {
-      name:"Category 2",
-      active:false,
-      goalList:[]
-  }
-]
+  //States
   const [categories,setCategories] = useState([])
   const [newCategory,setNewCategory] = useState(false);
   const [newGoal,setNewGoal] = useState(false);
   const [currCategory,setCurrCategory] = useState({})
 
+  //Funcs
   const toggleActive = (index) => {
     const newCategories = [...categories]
     newCategories[index].active = !newCategories[index].active
@@ -97,10 +46,15 @@ export default function Goals({stars,setStars}) {
     setCategories(newCategories)
   }
 
-  const toggleGoalRepeat = (catIndex,goalIndex) => {
-    const newCategories = [...categories]
-    newCategories[catIndex].goalList[goalIndex].repeat = !newCategories[catIndex].goalList[goalIndex].repeat
-    setCategories(newCategories)
+  const toggleGoalRepeat = (goalIndex,categoryObj) => {
+    console.log(`categoryObj: ${JSON.stringify(categoryObj)}`)
+    if(categoryObj){
+      categoryObj.goalList[goalIndex].repeat = !categoryObj.goalList[goalIndex].repeat
+      putCategory(categoryObj)
+    }
+    else{
+      console.error("Can't find Category ID")
+    }
   }
 
   const addCategory = (name) => {
@@ -117,7 +71,33 @@ export default function Goals({stars,setStars}) {
     newCategories.push(newCat)
     setCategories(newCategories)
   }
+  
+  const addGoal = (goal) => {
+    postGoal(goal)
+    const categoryObj = getCategoryById(currCategory._id)
+    console.log(`categoryObj: ${categoryObj}`)
+    if(categoryObj){
+      categoryObj.goalList.push(goal)
+      putCategory(categoryObj)
+      categoryObj.active=true
+    }
+    else{
+      console.error("Can't find Category ID")
+    }
+  }
 
+  const getCategoryById = (id) => {
+    const newCategories = [...categories]
+    return newCategories.find(categories => categories._id === id)
+  }
+  const setCategoryById = (id,newCat) => {
+    setCategories(prevCategories => 
+      prevCategories.map(category => 
+        category._id === id ? {...category,value:newCat} : category
+      ))
+  }
+
+  //APIs
   async function getCategories() {
     try{
       const response = await fetch(`http://localhost:5002/category/`)
@@ -153,7 +133,7 @@ export default function Goals({stars,setStars}) {
 
   async function putCategory(newCategory) {
     try{
-      const response = await fetch(`http://localhost:5002/category/${currCategory._id}`,{
+      const response = await fetch(`http://localhost:5002/category/${newCategory._id}`,{
         method:"PUT",
         headers: {
           'Content-Type': 'application/json', // Ensure the body is sent as JSON
@@ -161,31 +141,15 @@ export default function Goals({stars,setStars}) {
         body: JSON.stringify(newCategory)
       })
       if(!response.ok){
-        throw new Error(`postCategoryResponse status: ${response.status}`)
+        throw new Error(`putCategoryResponse status: ${response.status}`)
       }
       const category = await response.json()
-      console.log(`New Category: ${JSON.stringify(category)} Added`)
-      console.log(`New Category List: ${JSON.stringify(categories)}`)
+      console.log(`Category: ${JSON.stringify(category.name)} Updated`)
+      setCategoryById(newCategory._id,newCategory)
 
     } catch(err){
       console.error(err.message)
     }
-  }
-
-  const addGoal = (goal) => {
-    postGoal(goal)
-    const newCategories = [...categories]
-    const categoryObj = newCategories.find(categories => categories._id === currCategory._id)
-    console.log(`categoryObj: ${categoryObj}`)
-    if(categoryObj){
-      categoryObj.goalList.push(goal)
-      putCategory(categoryObj)
-      categoryObj.active=true
-    }
-    else{
-      console.err("Can't find Category ID")
-    }
-    
   }
 
   async function postGoal(newGoal) {
@@ -208,6 +172,7 @@ export default function Goals({stars,setStars}) {
     }
   }
 
+  //Effects
   useEffect(() => {
     getCategories()
     return

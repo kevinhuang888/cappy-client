@@ -3,9 +3,10 @@ import './goalItem.css'
 import checked from '../../assets/goals/checked.png'
 import repeat from '../../assets/goals/repeat.png'
 import star from '../../assets/goals/Star.png'
+import { useEffect } from 'react'
 
 export default function GoalItem({goal,goalIndex,toggleEditGoal,editGoalText,catIndex,setGoalContent,removeGoal,
-                                    toggleGoalRepeat,addGoal,stars,setStars}) {
+                                    toggleGoalRepeat,addGoal,stars,setStars,category}) {
 
     const handleTextChange = (e) => {
         editGoalText(catIndex,goalIndex,e.target.value)
@@ -17,11 +18,6 @@ export default function GoalItem({goal,goalIndex,toggleEditGoal,editGoalText,cat
             toggleEditGoal(catIndex,goalIndex)
             editGoalText(catIndex,goalIndex,"")
         }
-    }
-
-    const handleTextClick = () => {
-        editGoalText(catIndex,goalIndex,goal.content)
-        toggleEditGoal(catIndex,goalIndex)
     }
     
     const handleGoalCompleted = () => {
@@ -37,7 +33,7 @@ export default function GoalItem({goal,goalIndex,toggleEditGoal,editGoalText,cat
     }
 
     const handleGoalRepeat = () => {
-        toggleGoalRepeat(catIndex,goalIndex)
+        toggleGoalRepeat(goalIndex,category)
     }
 
   return (
@@ -46,7 +42,7 @@ export default function GoalItem({goal,goalIndex,toggleEditGoal,editGoalText,cat
             <img src={checked} alt="Checked" className="check" onClick={handleGoalCompleted}/>
         </div>
         <div className="content">
-            {!goal.edit && <span onClick={handleTextClick}>{goal.content}</span>}
+            {!goal.edit && <span>{goal.content}</span>}
             {goal.edit && <input value={goal.tempInput} onChange={(e) => handleTextChange(e)} onKeyDown={(e) => handleSubmit(e)}></input>}
         </div>
         <div className="imgContainer">
