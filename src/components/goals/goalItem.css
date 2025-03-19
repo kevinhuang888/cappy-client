@@ -44,6 +44,8 @@
 
         span{
             font-size:1.7em;
+            border-bottom:1.7px solid black;
+            padding:10px 0px;
             /*text-decoration: underline;*/
         }
         
@@ -53,6 +55,8 @@
             background: transparent;
             border:none;
             font-size:1.7em;
+            border-bottom:1.7px solid black;
+            padding:10px 0px;
         }
         input:focus{
             outline:none;

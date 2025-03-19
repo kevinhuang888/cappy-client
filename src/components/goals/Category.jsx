@@ -7,11 +7,16 @@ import AddIcon from '@mui/icons-material/Add';
 import { useState } from 'react'
 
 export default function Category({category,toggleActive,index,toggleEditGoal,editGoalText,setGoalContent,
-                                    addBlankGoal,removeGoal,toggleGoalRepeat,addGoal,stars,setStars}) {
+                                setCurrCategory, removeGoal,toggleGoalRepeat,addGoal,stars,setStars,setNewGoal}) {
     
     
     const handleArrowClick = () => {
         toggleActive(index)
+    }
+
+    const handleAddGoal = () => {
+        setNewGoal(true)
+        setCurrCategory(category)
     }
 
     return (
@@ -23,7 +28,7 @@ export default function Category({category,toggleActive,index,toggleEditGoal,edi
             </div>
             <span className="catName">{category.name}</span>
             <div className="iconContainer">
-                <AddIcon className="add" onClick={() => addBlankGoal(index)}/>
+                <AddIcon className="add" onClick={handleAddGoal}/>
             </div>
             <div className="emptySpace"></div>
         </div>
