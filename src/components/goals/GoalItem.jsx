@@ -3,10 +3,12 @@ import './goalItem.css'
 import checked from '../../assets/goals/checked.png'
 import repeat from '../../assets/goals/repeat.png'
 import star from '../../assets/goals/Star.png'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
-export default function GoalItem({goal,goalIndex,toggleEditGoal,editGoalText,catIndex,setGoalContent,removeGoal,
+export default function GoalItem({goalId,goalIndex,toggleEditGoal,editGoalText,catIndex,setGoalContent,removeGoal,
                                     toggleGoalRepeat,addGoal,stars,setStars,category}) {
+
+    const [goal,setGoal] = useState({})
 
     const handleTextChange = (e) => {
         editGoalText(catIndex,goalIndex,e.target.value)
@@ -35,6 +37,25 @@ export default function GoalItem({goal,goalIndex,toggleEditGoal,editGoalText,cat
     const handleGoalRepeat = () => {
         toggleGoalRepeat(goalIndex,category)
     }
+    
+    async function getGoalById(goalId) {
+        try{
+          const response = await fetch(`http://localhost:5002/goal/${goalId}`)
+          if(!response.ok){
+            throw new Error(`Response status: ${response.status}`)
+          }
+          const goal = await response.json()
+          console.log(`[getGoalById] Id: ${goalId}, Data: ${JSON.stringify(goal)}`)
+          setGoal(goal)
+        } catch(err){
+          console.error(err.message)
+        }
+    }
+
+    useEffect(() => {
+        getGoalById(goalId)
+        return
+    },[])
 
   return (
     <li className="goalItem">

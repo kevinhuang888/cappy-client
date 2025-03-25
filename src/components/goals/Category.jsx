@@ -33,8 +33,8 @@ export default function Category({category,toggleActive,index,toggleEditGoal,edi
             <div className="emptySpace"></div>
         </div>
         <ul className={"goalList " + (category.active && "active")}>
-            {category.goalList.map((goal,goalIndex) => (
-                <GoalItem key={goalIndex} goal={goal} goalIndex={goalIndex} toggleEditGoal={toggleEditGoal} editGoalText={editGoalText} catIndex={index} setGoalContent={setGoalContent} 
+            {category.goalList.map((goalId,goalIndex) => (
+                <GoalItem key={goalIndex} goalId={goalId} goalIndex={goalIndex} toggleEditGoal={toggleEditGoal} editGoalText={editGoalText} catIndex={index} setGoalContent={setGoalContent} 
                 removeGoal={removeGoal} toggleGoalRepeat={toggleGoalRepeat} addGoal={addGoal} stars={stars} setStars={setStars} category={category} />
             ))}
         </ul>

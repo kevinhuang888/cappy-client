@@ -57,27 +57,27 @@ export default function Goals({stars,setStars}) {
     }
   }
 
-  const addCategory = (name) => {
+  const addCategory = async (name) => {
 
     const newCat = {
       name:name,
       goalList:[]
     }
 
-    postCategory(newCat)
+    const postedCat = await postCategory(newCat)
 
-    newCat.active=false
+    postedCat.active=false
     const newCategories = [...categories]
-    newCategories.push(newCat)
+    newCategories.push(postedCat)
     setCategories(newCategories)
   }
   
-  const addGoal = (goal) => {
-    postGoal(goal)
+  const addGoal = async (goal) => {
+    const newGoal = await postGoal(goal)
+    console.log(`[addGoal] ${newGoal._id}`)
     const categoryObj = getCategoryById(currCategory._id)
-    console.log(`categoryObj: ${categoryObj}`)
     if(categoryObj){
-      categoryObj.goalList.push(goal)
+      categoryObj.goalList.push(newGoal._id)
       putCategory(categoryObj)
       categoryObj.active=true
     }
@@ -125,6 +125,7 @@ export default function Goals({stars,setStars}) {
       }
       const category = await response.json()
       console.log(`New Category created: ${category}`)
+      return category
 
     } catch(err){
       console.error(err.message)
@@ -166,6 +167,7 @@ export default function Goals({stars,setStars}) {
       }
       const goal = await response.json()
       console.log(`New Goal created: ${goal}`)
+      return goal
 
     } catch(err){
       console.error(err.message)
