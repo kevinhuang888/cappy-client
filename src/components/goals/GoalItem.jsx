@@ -4,6 +4,7 @@ import checked from '../../assets/goals/checked.png'
 import repeat from '../../assets/goals/repeat.png'
 import star from '../../assets/goals/Star.png'
 import { useState, useEffect } from 'react'
+import * as restApi from './GoalsApi'
 
 export default function GoalItem({goalId,goalIndex,toggleEditGoal,editGoalText,catIndex,setGoalContent,removeGoal,
                                     toggleGoalRepeat,addGoal,stars,setStars,category}) {
@@ -37,24 +38,14 @@ export default function GoalItem({goalId,goalIndex,toggleEditGoal,editGoalText,c
     const handleGoalRepeat = () => {
         toggleGoalRepeat(goalIndex,category)
     }
-    
-    async function getGoalById(goalId) {
-        try{
-          const response = await fetch(`http://localhost:5002/goal/${goalId}`)
-          if(!response.ok){
-            throw new Error(`Response status: ${response.status}`)
-          }
-          const goal = await response.json()
-          console.log(`[getGoalById] Id: ${goalId}, Data: ${JSON.stringify(goal)}`)
-          setGoal(goal)
-        } catch(err){
-          console.error(err.message)
-        }
-    }
 
     useEffect(() => {
-        getGoalById(goalId)
-        return
+        async function renderGoal(){
+            const goal_res = await restApi.getGoalById(goalId)
+            setGoal(goal_res)
+            return
+        }
+        renderGoal()
     },[])
 
   return (

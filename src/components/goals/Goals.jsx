@@ -6,6 +6,7 @@ import { useState,useEffect } from 'react'
 import Header from '../header/Header'
 import NewCategory from './NewCategory'
 import NewGoal from './NewGoal'
+import * as restApi from './GoalsApi'
 
 export default function Goals({stars,setStars}) {
 
@@ -46,11 +47,12 @@ export default function Goals({stars,setStars}) {
     setCategories(newCategories)
   }
 
-  const toggleGoalRepeat = (goalIndex,categoryObj) => {
+  const toggleGoalRepeat = async (goalIndex,categoryObj) => {
     console.log(`categoryObj: ${JSON.stringify(categoryObj)}`)
     if(categoryObj){
       categoryObj.goalList[goalIndex].repeat = !categoryObj.goalList[goalIndex].repeat
-      putCategory(categoryObj)
+      const newCategory = await restApi.putCategory(categoryObj)
+      setCategoryById(newCategory._id,newCategory)
     }
     else{
       console.error("Can't find Category ID")
@@ -64,7 +66,7 @@ export default function Goals({stars,setStars}) {
       goalList:[]
     }
 
-    const postedCat = await postCategory(newCat)
+    const postedCat = await restApi.postCategory(newCat)
 
     postedCat.active=false
     const newCategories = [...categories]
@@ -73,12 +75,13 @@ export default function Goals({stars,setStars}) {
   }
   
   const addGoal = async (goal) => {
-    const newGoal = await postGoal(goal)
+    const newGoal = await restApi.postGoal(goal)
     console.log(`[addGoal] ${newGoal._id}`)
     const categoryObj = getCategoryById(currCategory._id)
     if(categoryObj){
       categoryObj.goalList.push(newGoal._id)
-      putCategory(categoryObj)
+      const newCategory = await restApi.putCategory(categoryObj)
+      setCategoryById(newCategory._id,newCategory)
       categoryObj.active=true
     }
     else{
@@ -97,87 +100,16 @@ export default function Goals({stars,setStars}) {
       ))
   }
 
-  //APIs
-  async function getCategories() {
-    try{
-      const response = await fetch(`http://localhost:5002/category/`)
-      if(!response.ok){
-        throw new Error(`Response status: ${response.status}`)
-      }
-      const categories = await response.json()
-      setCategories(categories)
-    } catch(err){
-      console.error(err.message)
-    }
-  }
 
-  async function postCategory(newCategory) {
-    try{
-      const response = await fetch(`http://localhost:5002/category/`,{
-        method:"POST",
-        headers: {
-          'Content-Type': 'application/json', // Ensure the body is sent as JSON
-        },
-        body: JSON.stringify(newCategory)
-      })
-      if(!response.ok){
-        throw new Error(`postCategoryResponse status: ${response.status}`)
-      }
-      const category = await response.json()
-      console.log(`New Category created: ${category}`)
-      return category
-
-    } catch(err){
-      console.error(err.message)
-    }
-  }
-
-  async function putCategory(newCategory) {
-    try{
-      const response = await fetch(`http://localhost:5002/category/${newCategory._id}`,{
-        method:"PUT",
-        headers: {
-          'Content-Type': 'application/json', // Ensure the body is sent as JSON
-        },
-        body: JSON.stringify(newCategory)
-      })
-      if(!response.ok){
-        throw new Error(`putCategoryResponse status: ${response.status}`)
-      }
-      const category = await response.json()
-      console.log(`Category: ${JSON.stringify(category.name)} Updated`)
-      setCategoryById(newCategory._id,newCategory)
-
-    } catch(err){
-      console.error(err.message)
-    }
-  }
-
-  async function postGoal(newGoal) {
-    try{
-      const response = await fetch(`http://localhost:5002/goal/`,{
-        method:"POST",
-        headers: {
-          'Content-Type': 'application/json', // Ensure the body is sent as JSON
-        },
-        body: JSON.stringify(newGoal)
-      })
-      if(!response.ok){
-        throw new Error(`postGoal status: ${response.status}`)
-      }
-      const goal = await response.json()
-      console.log(`New Goal created: ${goal}`)
-      return goal
-
-    } catch(err){
-      console.error(err.message)
-    }
-  }
 
   //Effects
   useEffect(() => {
-    getCategories()
-    return
+    async function renderCategories(){
+      const newCategories = await restApi.getCategories()
+      setCategories(newCategories)
+      return
+    }
+    renderCategories()
   },[])
   
 
